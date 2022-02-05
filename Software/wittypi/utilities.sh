@@ -411,22 +411,19 @@ current_timestamp()
   fi
 }
 
-wittypi_home="`dirname \"$0\"`"
-wittypi_home="`( cd \"$wittypi_home\" && pwd )`"
+# wittypi_home="`dirname \"$0\"`"
+# wittypi_home="`( cd \"$wittypi_home\" && pwd )`"
 log2file()
 {
-  local datetime=$(date +'[%Y-%m-%d %H:%M:%S]')
-  local msg="$datetime $1"
-  echo $msg >> $wittypi_home/wittyPi.log
+  # local datetime=$(date +'[%Y-%m-%d %H:%M:%S]')
+  # local msg="$datetime $1"
+  # echo $msg >> $wittypi_home/wittyPi.log
+  logger "$1"
 }
 
 log()
 {
-  if [ $# -gt 1 ] ; then
-    echo $2 "$1"
-  else
-    echo "$1"
-  fi
+  echo "$1"
   log2file "$1"
 }
 

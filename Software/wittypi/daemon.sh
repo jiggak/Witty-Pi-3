@@ -116,13 +116,13 @@ done
 
 # run schedule script
 if [ $has_rtc == 0 ] ; then
-  "$cur_dir/runScript.sh" 0 revise >> "$cur_dir/schedule.log" &
+  "$cur_dir/runScript.sh" 0 revise &
 else
   log 'Witty Pi is not connected, skip schedule script...'
 fi
 
 # run afterStartup.sh in background
-"$cur_dir/afterStartup.sh" >> "$cur_dir/wittyPi.log" 2>&1 &
+"$cur_dir/afterStartup.sh" &
 
 # wait for GPIO-4 (BCM naming) falling, or alarm B (shutdown)
 log 'Pending for incoming shutdown command...'
@@ -173,7 +173,7 @@ else
 fi
 
 # run beforeShutdown.sh
-"$cur_dir/beforeShutdown.sh" >> "$cur_dir/wittyPi.log" 2>&1 &
+"$cur_dir/beforeShutdown.sh"
 
 # shutdown Raspberry Pi
 do_shutdown $HALT_PIN $has_rtc

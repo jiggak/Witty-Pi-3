@@ -171,7 +171,7 @@ choose_schedule_script()
     log "  Copying \"${script##*/}\" to \"schedule.wpi\"..."
     cp ${script} "$my_dir/schedule.wpi"
     log '  Running the script...'
-    . "$my_dir/runScript.sh" | tee -a "$my_dir/schedule.log"
+    . "$my_dir/runScript.sh"
     log '  Done :-)'
   else
     echo "  \"$index\" is not a good choice, I need a number from 1 to $count"
