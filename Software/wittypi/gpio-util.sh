@@ -228,7 +228,7 @@ doRead()
   else
     pin=$2
   fi
-  raspi-gpio get $pin | sed 's/.*level=//' | sed 's/ fsel=.*//'
+  raspi-gpio get $pin | sed 's/.*level=//' | sed 's/ func=.*//'
 }
 
 

@@ -19,17 +19,6 @@ log 'Witty Pi daemon (v3.50) is started.'
 pi_model=$(cat /proc/device-tree/model)
 log "Running on $pi_model"
 
-# log NOOBS version, if exists
-if [[ ! -d "$cur_dir/tmp" ]]; then
-  mkdir "$cur_dir/tmp"
-fi
-mount /dev/mmcblk0p1 "$cur_dir/tmp"
-noobs_ver=$(cat "$cur_dir/tmp/BUILD-DATA" | grep 'NOOBS Version:')
-if [ ! -z "$noobs_ver" ]; then
-  log "$noobs_ver"
-fi
-umount "$cur_dir/tmp"
-
 # check 1-wire confliction
 if one_wire_confliction ; then
 	log "Confliction: 1-Wire interface is enabled on GPIO-$HALT_PIN, which is also used by Witty Pi."
@@ -105,13 +94,14 @@ fi
 
 # synchronize time
 if [ $has_rtc == 0 ] ; then
-  "$cur_dir/syncTime.sh" &
+  # don't need most of syncTime.sh since systemd does network time sync
+  # "$cur_dir/syncTime.sh" &
+  system_to_rtc
+  # wait for system time update
+  # sleep 3
 else
   log 'Witty Pi is not connected, skip synchronizing time...'
 fi
-
-# wait for system time update
-sleep 3
 
 # delay until GPIO pin state gets stable
 counter=0

@@ -4,7 +4,7 @@
 # This script provides some useful utility functions
 #
 
-export LC_ALL=en_GB.UTF-8
+export LC_ALL=en_US.UTF-8
 
 if [ -z ${I2C_RTC_ADDRESS+x} ]; then
 	readonly I2C_RTC_ADDRESS=0x68
@@ -528,8 +528,8 @@ do_shutdown()
 
   log 'Halting all processes and then shutdown Raspberry Pi...'
 
-  # halt everything and shutdown
-  shutdown -h now
+  # halt everything and shutdown, configure /etc/sudoers to allow using halt
+  sudo halt
 }
 
 schedule_script_interrupted()
