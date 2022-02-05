@@ -7,55 +7,55 @@
 export LC_ALL=en_US.UTF-8
 
 if [ -z ${I2C_RTC_ADDRESS+x} ]; then
-	readonly I2C_RTC_ADDRESS=0x68
-	readonly I2C_MC_ADDRESS=0x69
-	                  
-	readonly I2C_ID=0
-	readonly I2C_VOLTAGE_IN_I=1
-	readonly I2C_VOLTAGE_IN_D=2
-	readonly I2C_VOLTAGE_OUT_I=3
-	readonly I2C_VOLTAGE_OUT_D=4
-	readonly I2C_CURRENT_OUT_I=5
-	readonly I2C_CURRENT_OUT_D=6
-	readonly I2C_POWER_MODE=7
-	readonly I2C_LV_SHUTDOWN=8
-	
-	readonly I2C_CONF_ADDRESS=9
-	readonly I2C_CONF_DEFAULT_ON=10
-	readonly I2C_CONF_PULSE_INTERVAL=11
-	readonly I2C_CONF_LOW_VOLTAGE=12
-	readonly I2C_CONF_BLINK_LED=13
-	readonly I2C_CONF_POWER_CUT_DELAY=14
-	readonly I2C_CONF_RECOVERY_VOLTAGE=15
-	readonly I2C_CONF_DUMMY_LOAD=16
-	readonly I2C_CONF_ADJ_VIN=17
-	readonly I2C_CONF_ADJ_VOUT=18
-	readonly I2C_CONF_ADJ_IOUT=19
-	
-	readonly HALT_PIN=4    # halt by GPIO-4 (BCM naming)
-	readonly SYSUP_PIN=17  # output SYS_UP signal on GPIO-17 (BCM naming)
+  readonly I2C_RTC_ADDRESS=0x68
+  readonly I2C_MC_ADDRESS=0x69
+                    
+  readonly I2C_ID=0
+  readonly I2C_VOLTAGE_IN_I=1
+  readonly I2C_VOLTAGE_IN_D=2
+  readonly I2C_VOLTAGE_OUT_I=3
+  readonly I2C_VOLTAGE_OUT_D=4
+  readonly I2C_CURRENT_OUT_I=5
+  readonly I2C_CURRENT_OUT_D=6
+  readonly I2C_POWER_MODE=7
+  readonly I2C_LV_SHUTDOWN=8
+  
+  readonly I2C_CONF_ADDRESS=9
+  readonly I2C_CONF_DEFAULT_ON=10
+  readonly I2C_CONF_PULSE_INTERVAL=11
+  readonly I2C_CONF_LOW_VOLTAGE=12
+  readonly I2C_CONF_BLINK_LED=13
+  readonly I2C_CONF_POWER_CUT_DELAY=14
+  readonly I2C_CONF_RECOVERY_VOLTAGE=15
+  readonly I2C_CONF_DUMMY_LOAD=16
+  readonly I2C_CONF_ADJ_VIN=17
+  readonly I2C_CONF_ADJ_VOUT=18
+  readonly I2C_CONF_ADJ_IOUT=19
+  
+  readonly HALT_PIN=4    # halt by GPIO-4 (BCM naming)
+  readonly SYSUP_PIN=17  # output SYS_UP signal on GPIO-17 (BCM naming)
 
-	readonly INTERNET_SERVER='http://google.com' # check network accessibility and get network time
+  readonly INTERNET_SERVER='http://google.com' # check network accessibility and get network time
 fi
 
 
 one_wire_confliction()
 {
-	if [[ $HALT_PIN -eq 4 ]]; then
-		if grep -qe "^\s*dtoverlay=w1-gpio\s*$" /boot/config.txt; then
-	  	return 0
-		fi
-		if grep -qe "^\s*dtoverlay=w1-gpio-pullup\s*$" /boot/config.txt; then
-	  	return 0
-		fi
-	fi 
+  if [[ $HALT_PIN -eq 4 ]]; then
+    if grep -qe "^\s*dtoverlay=w1-gpio\s*$" /boot/config.txt; then
+      return 0
+    fi
+    if grep -qe "^\s*dtoverlay=w1-gpio-pullup\s*$" /boot/config.txt; then
+      return 0
+    fi
+  fi 
   if grep -qe "^\s*dtoverlay=w1-gpio,gpiopin=$HALT_PIN\s*$" /boot/config.txt; then
-  	return 0
-	fi
-	if grep -qe "^\s*dtoverlay=w1-gpio-pullup,gpiopin=$HALT_PIN\s*$" /boot/config.txt; then
-  	return 0
-	fi
-	return 1
+    return 0
+  fi
+  if grep -qe "^\s*dtoverlay=w1-gpio-pullup,gpiopin=$HALT_PIN\s*$" /boot/config.txt; then
+    return 0
+  fi
+  return 1
 }
 
 has_internet()
@@ -94,12 +94,12 @@ is_rtc_connected()
 
 is_mc_connected()
 {
-	local result=$(i2cdetect -y 1)
+  local result=$(i2cdetect -y 1)
   if [[ $result == *"69"* ]] ; then
     return 0
   else
-  	return 1
-	fi
+    return 1
+  fi
 }
 
 get_sys_time()
@@ -109,18 +109,18 @@ get_sys_time()
 
 get_sys_timestamp()
 {
-	echo $(date -u +%s)
+  echo $(date -u +%s)
 }
 
 get_rtc_timestamp()
 {
-	sec=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x00))
-	min=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x01))
-	hour=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x02))
-	date=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x04))
-	month=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x05))
-	year=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x06))
-	echo $(date --date="$year-$month-$date $hour:$min:$sec UTC" +%s)
+  sec=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x00))
+  min=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x01))
+  hour=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x02))
+  date=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x04))
+  month=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x05))
+  year=$(bcd2dec $(i2c_read 0x01 $I2C_RTC_ADDRESS 0x06))
+  echo $(date --date="$year-$month-$date $hour:$min:$sec UTC" +%s)
 }
 
 get_rtc_time()
@@ -356,8 +356,8 @@ clear_shutdown_time()
 
 net_to_system()
 {
-	local net_ts=$(get_network_timestamp)
-	if [[ "$net_ts" != "-1" ]]; then
+  local net_ts=$(get_network_timestamp)
+  if [[ "$net_ts" != "-1" ]]; then
     log '  Applying network time to system...'
     sudo date -u -s @$net_ts >/dev/null
     log '  Done :-)'
@@ -390,8 +390,8 @@ system_to_rtc()
 rtc_to_system()
 {
   log '  Writing RTC time to system...'
-	local rtc_ts=$(get_rtc_timestamp)
-	sudo date -u -s @$rtc_ts >/dev/null
+  local rtc_ts=$(get_rtc_timestamp)
+  sudo date -u -s @$rtc_ts >/dev/null
   log '  Done :-)'
 }
 
@@ -551,61 +551,61 @@ schedule_script_interrupted()
 
 get_power_mode()
 {
-	local mode=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_POWER_MODE)
-	echo $(($mode))
+  local mode=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_POWER_MODE)
+  echo $(($mode))
 }
 
 get_input_voltage()
 {
-	local i=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_IN_I)
-	local d=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_IN_D)
-	calc $(($i))+$(($d))/100
+  local i=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_IN_I)
+  local d=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_IN_D)
+  calc $(($i))+$(($d))/100
 }
 
 get_output_voltage()
 {
-	local i=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_OUT_I)
-	local d=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_OUT_D)
-	calc $(($i))+$(($d))/100
+  local i=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_OUT_I)
+  local d=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_VOLTAGE_OUT_D)
+  calc $(($i))+$(($d))/100
 }
 
 get_output_current()
 {
-	local i=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CURRENT_OUT_I)
-	local d=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CURRENT_OUT_D)
-	calc $(($i))+$(($d))/100
+  local i=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CURRENT_OUT_I)
+  local d=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CURRENT_OUT_D)
+  calc $(($i))+$(($d))/100
 }
 
 get_low_voltage_threshold()
 {
-	local lowVolt=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_LOW_VOLTAGE)
+  local lowVolt=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_LOW_VOLTAGE)
   if [ $(($lowVolt)) == 255 ]; then
     lowVolt='disabled'
-	else
-	  lowVolt=$(calc $(($lowVolt))/10)
-	  lowVolt+='V'
+  else
+    lowVolt=$(calc $(($lowVolt))/10)
+    lowVolt+='V'
   fi
   echo $lowVolt;
 }
 
 get_recovery_voltage_threshold()
 {
-	local recVolt=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_RECOVERY_VOLTAGE)
+  local recVolt=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_RECOVERY_VOLTAGE)
   if [ $(($recVolt)) == 255 ]; then
     recVolt='disabled'
-	else
+  else
     recVolt=$(calc $(($recVolt))/10)
-	  recVolt+='V'
+    recVolt+='V'
   fi
   echo $recVolt;
 }
 
 clear_low_voltage_threshold()
 {
-	i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_LOW_VOLTAGE 0xFF
+  i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_LOW_VOLTAGE 0xFF
 }
 
 clear_recovery_voltage_threshold()
 {
-	i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_RECOVERY_VOLTAGE 0xFF
+  i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_RECOVERY_VOLTAGE 0xFF
 }

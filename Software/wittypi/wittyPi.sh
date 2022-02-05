@@ -37,12 +37,12 @@ if ! is_rtc_connected ; then
 fi
 
 if one_wire_confliction ; then
-	echo ''
-	log 'Confliction detected:'
-	log "1-Wire interface is enabled on GPIO-$HALT_PIN, which is also used by Witty Pi."
-	log 'You may solve this confliction by moving 1-Wire interface to another GPIO pin.'
-	echo ''
-	exit
+  echo ''
+  log 'Confliction detected:'
+  log "1-Wire interface is enabled on GPIO-$HALT_PIN, which is also used by Witty Pi."
+  log 'You may solve this confliction by moving 1-Wire interface to another GPIO pin.'
+  echo ''
+  exit
 fi
 
 if is_mc_connected ; then
@@ -223,7 +223,7 @@ set_default_state()
 set_power_cut_delay()
 {
   local maxVal='8.0';
-	if [ $(($firmwareID)) -ge 35 ]; then
+  if [ $(($firmwareID)) -ge 35 ]; then
     maxVal='25.0'
   fi
   read -p "Input new delay (0.0~$maxVal: value in seconds): " delay
@@ -238,7 +238,7 @@ set_power_cut_delay()
 
 set_pulsing_interval()
 {
-	read -p 'Input new interval (1,2,4 or 8: value in seconds): ' interval
+  read -p 'Input new interval (1,2,4 or 8: value in seconds): ' interval
   case $interval in
     1) i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_PULSE_INTERVAL 0x06 && log 'Pulsing interval set to 1 second!' && sleep 2;;
     2) i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_PULSE_INTERVAL 0x07 && log 'Pulsing interval set to 2 seconds!' && sleep 2;;
@@ -250,33 +250,33 @@ set_pulsing_interval()
 
 set_white_led_duration()
 {
-	read -p 'Input new duration for white LED (0~254): ' duration
-	if [ $duration -ge 0 ] && [ $duration -le 254 ]; then
-		i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_BLINK_LED $duration
-		log "White LED duration set to $duration!" && sleep 2
-	else
-	  echo 'Please input from 0 to 254' && sleep 2
-	fi
+  read -p 'Input new duration for white LED (0~254): ' duration
+  if [ $duration -ge 0 ] && [ $duration -le 254 ]; then
+    i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_BLINK_LED $duration
+    log "White LED duration set to $duration!" && sleep 2
+  else
+    echo 'Please input from 0 to 254' && sleep 2
+  fi
 }
 
 set_dummy_load_duration()
 {
-	read -p 'Input new duration for dummy load (0~254): ' duration
-	if [ $duration -ge 0 ] && [ $duration -le 254 ]; then
-		i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_DUMMY_LOAD $duration
-		log "Dummy load duration set to $duration!" && sleep 2
-	else
-	  echo 'Please input from 0 to 254' && sleep 2
-	fi
+  read -p 'Input new duration for dummy load (0~254): ' duration
+  if [ $duration -ge 0 ] && [ $duration -le 254 ]; then
+    i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_DUMMY_LOAD $duration
+    log "Dummy load duration set to $duration!" && sleep 2
+  else
+    echo 'Please input from 0 to 254' && sleep 2
+  fi
 }
 
 set_vin_adjustment()
 {
-	read -p 'Input Vin adjustment (-1.27~1.27: value in volts): ' vinAdj
+  read -p 'Input Vin adjustment (-1.27~1.27: value in volts): ' vinAdj
   if (( $(awk "BEGIN {print ($vinAdj >= -1.27 && $vinAdj <= 1.27)}") )); then
     local adj=$(calc $vinAdj*100)
     if (( $(awk "BEGIN {print ($adj < 0)}") )); then
-    	adj=$((128-$adj))
+      adj=$((128-$adj))
     fi
     i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_ADJ_VIN ${adj%.*}  
     local setting=$(printf 'Vin adjustment set to %.2fV!\n' $vinAdj)
@@ -288,11 +288,11 @@ set_vin_adjustment()
 
 set_vout_adjustment()
 {
-	read -p 'Input Vout adjustment (-1.27~1.27: value in volts): ' voutAdj
+  read -p 'Input Vout adjustment (-1.27~1.27: value in volts): ' voutAdj
   if (( $(awk "BEGIN {print ($voutAdj >= -1.27 && $voutAdj <= 1.27)}") )); then
     local adj=$(calc $voutAdj*100)
     if (( $(awk "BEGIN {print ($adj < 0)}") )); then
-    	adj=$((128-$adj))
+      adj=$((128-$adj))
     fi
     i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_ADJ_VOUT ${adj%.*}  
     local setting=$(printf 'Vout adjustment set to %.2fV!\n' $voutAdj)
@@ -304,11 +304,11 @@ set_vout_adjustment()
 
 set_iout_adjustment()
 {
-	read -p 'Input Iout adjustment (-1.27~1.27: value in amps): ' ioutAdj
+  read -p 'Input Iout adjustment (-1.27~1.27: value in amps): ' ioutAdj
   if (( $(awk "BEGIN {print ($ioutAdj >= -1.27 && $ioutAdj <= 1.27)}") )); then
     local adj=$(calc $ioutAdj*100)
     if (( $(awk "BEGIN {print ($adj < 0)}") )); then
-    	adj=$((128-$adj))
+      adj=$((128-$adj))
     fi
     i2c_write 0x01 $I2C_MC_ADDRESS $I2C_CONF_ADJ_IOUT ${adj%.*}  
     local setting=$(printf 'Iout adjustment set to %.2fA!\n' $ioutAdj)
@@ -325,7 +325,7 @@ other_settings()
   local ds=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_DEFAULT_ON)
   if [[ $ds -eq 0 ]]; then
     echo ' [default OFF]'
-	else
+  else
     echo ' [default ON]'
   fi
   echo -n '  [2] Power cut delay after shutdown'
@@ -337,11 +337,11 @@ other_settings()
   if [ $pi == '0x09' ]; then
     pi=8
   elif [ $pi == '0x07' ]; then
-	  pi=2
-	elif [ $pi == '0x06' ]; then
-	  pi=1
-	else
-	  pi=4
+    pi=2
+  elif [ $pi == '0x06' ]; then
+    pi=1
+  else
+    pi=4
   fi
   echo " [$pi Seconds]"  
   echo -n '  [4] White LED duration'
@@ -353,38 +353,38 @@ other_settings()
   echo -n '  [6] Vin adjustment'
   local vinAdj=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_ADJ_VIN)
   if [[ $vinAdj -gt 127 ]]; then
-  	vinAdj=$(calc $((128-$vinAdj))/100)
- 	else
- 		vinAdj=$(calc $(($vinAdj))/100)
+    vinAdj=$(calc $((128-$vinAdj))/100)
+  else
+    vinAdj=$(calc $(($vinAdj))/100)
   fi
   printf ' [%.2fV]\n' "$vinAdj"
   echo -n '  [7] Vout adjustment'
   local voutAdj=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_ADJ_VOUT)
   if [[ $voutAdj -gt 127 ]]; then
-  	voutAdj=$(calc $((128-$voutAdj))/100)
- 	else
- 		voutAdj=$(calc $(($voutAdj))/100)
+    voutAdj=$(calc $((128-$voutAdj))/100)
+  else
+    voutAdj=$(calc $(($voutAdj))/100)
   fi
   printf ' [%.2fV]\n' "$voutAdj"
   echo -n '  [8] Iout adjustment'
   local ioutAdj=$(i2c_read 0x01 $I2C_MC_ADDRESS $I2C_CONF_ADJ_IOUT)
   if [[ $ioutAdj -gt 127 ]]; then
-  	ioutAdj=$(calc $((128-$ioutAdj))/100)
- 	else
- 		ioutAdj=$(calc $(($ioutAdj))/100)
+    ioutAdj=$(calc $((128-$ioutAdj))/100)
+  else
+    ioutAdj=$(calc $(($ioutAdj))/100)
   fi
   printf ' [%.2fA]\n' "$ioutAdj"
   read -p "Which parameter to set? (1~8) " action
   case $action in
-      [1]* ) set_default_state;;
-      [2]* ) set_power_cut_delay;;
-      [3]* ) set_pulsing_interval;;
-      [4]* ) set_white_led_duration;;
-      [5]* ) set_dummy_load_duration;;
-      [6]* ) set_vin_adjustment;;
-      [7]* ) set_vout_adjustment;;
-      [8]* ) set_iout_adjustment;;
-      * ) echo 'Please choose from 1 to 8';;
+    [1]* ) set_default_state;;
+    [2]* ) set_power_cut_delay;;
+    [3]* ) set_pulsing_interval;;
+    [4]* ) set_white_led_duration;;
+    [5]* ) set_dummy_load_duration;;
+    [6]* ) set_vin_adjustment;;
+    [7]* ) set_vout_adjustment;;
+    [8]* ) set_iout_adjustment;;
+    * ) echo 'Please choose from 1 to 8';;
   esac
 }
 
@@ -447,13 +447,13 @@ reset_data()
   echo '  [6] Perform all actions above'
   read -p "Which action to perform? (1~6) " action
   case $action in
-      [1]* ) reset_startup_time;;
-      [2]* ) reset_shutdown_time;;
-      [3]* ) delete_schedule_script;;
-      [4]* ) reset_low_voltage_threshold;;
-      [5]* ) reset_recovery_voltage_threshold;;
-      [6]* ) reset_all;;
-      * ) echo 'Please choose from 1 to 6';;
+    [1]* ) reset_startup_time;;
+    [2]* ) reset_shutdown_time;;
+    [3]* ) delete_schedule_script;;
+    [4]* ) reset_low_voltage_threshold;;
+    [5]* ) reset_recovery_voltage_threshold;;
+    [6]* ) reset_all;;
+    * ) echo 'Please choose from 1 to 6';;
   esac
 }
 
@@ -481,8 +481,8 @@ while true; do
     iout=$(get_output_current)
     voltages=">>> "
     if [ $(get_power_mode) -eq 1 ]; then
-		  voltages+="Vin=$(printf %.02f $vin)V, "
-		fi
+      voltages+="Vin=$(printf %.02f $vin)V, "
+    fi
     voltages+="Vout=$(printf %.02f $vout)V, Iout=$(printf %.02f $iout)A"
     echo "$voltages"
   fi
@@ -513,7 +513,7 @@ while true; do
     echo ''
   fi
   echo -n '  7. Set low voltage threshold'
-	lowVolt=$(get_low_voltage_threshold)
+  lowVolt=$(get_low_voltage_threshold)
   if [ ${#lowVolt} == '8' ]; then
     echo ''
   else
@@ -531,18 +531,18 @@ while true; do
   echo ' 11. Exit'
   read -p 'What do you want to do? (1~11) ' action
   case $action in
-      1 ) system_to_rtc;;
-      2 ) rtc_to_system;;
-      3 ) synchronize_time;;
-      4 ) schedule_shutdown;;
-      5 ) schedule_startup;;
-      6 ) choose_schedule_script;;
-      7 ) set_low_voltage_threshold;;
-      8 ) set_recovery_voltage_threshold;;
-      9 ) other_settings;;
-      10 ) reset_data;;
-      11 ) exit;;
-      * ) echo 'Please choose from 1 to 11';;
+    1 ) system_to_rtc;;
+    2 ) rtc_to_system;;
+    3 ) synchronize_time;;
+    4 ) schedule_shutdown;;
+    5 ) schedule_startup;;
+    6 ) choose_schedule_script;;
+    7 ) set_low_voltage_threshold;;
+    8 ) set_recovery_voltage_threshold;;
+    9 ) other_settings;;
+    10 ) reset_data;;
+    11 ) exit;;
+    * ) echo 'Please choose from 1 to 11';;
   esac
   echo ''
   echo '================================================================================'

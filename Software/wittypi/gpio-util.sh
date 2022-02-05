@@ -258,16 +258,16 @@ doWfi()
   edge=$3
   if ! hash python3 2>/dev/null; then
     local running=1
-	local prev=$(doRead '' $pin)
+    local prev=$(doRead '' $pin)
     while [[ $running -eq 1 ]]; do
-	  local cur=$(doRead '' $pin)
-	  if [[ ($edge == 'both' && $prev -ne $cur) 
-	     || ($edge == 'falling' && $prev -eq 1 && $cur -eq 0) 
-		 || ($edge == 'rising' && $prev -eq 0 && $cur -eq 1) ]]; then
-	    running=0
-	  fi
-	  prev=$cur
-	  sleep 0.2
+    local cur=$(doRead '' $pin)
+    if [[ ($edge == 'both' && $prev -ne $cur) 
+       || ($edge == 'falling' && $prev -eq 1 && $cur -eq 0) 
+       || ($edge == 'rising' && $prev -eq 0 && $cur -eq 1) ]]; then
+      running=0
+    fi
+    prev=$cur
+    sleep 0.2
     done
   else
 # Python Code Begins
@@ -320,7 +320,7 @@ align_left()
   local length=$2
   let trailing=$length-${#text}
   if [[ $trailing -lt 0 ]]; then
-  	let trailing=0
+    let trailing=0
   fi
   printf $text
   printf "%${trailing}s"
@@ -333,7 +333,7 @@ align_right()
   local length=$2
   let leading=($length-${#text})
   if [[ $leading -lt 0 ]]; then
-  	let leading=0
+    let leading=0
   fi
   printf "%${leading}s"
   printf $text
