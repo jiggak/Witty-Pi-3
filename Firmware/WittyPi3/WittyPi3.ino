@@ -465,7 +465,7 @@ ISR (PCINT1_vect) {
       
       // when button triggered by low voltage, transitioning from low to high
       // happens too quickly for the pi software to detect it
-      // moved to cutPower()
+      // moved to cutPower(), I suspect this breaks RTC wakeup
 
       // restore from RTC alarm processing
       //digitalWrite(PIN_BUTTON, 1);
