@@ -124,7 +124,7 @@ void loop() {
     voltageQueryTime = curTime;
 
     // if input voltage is not fixed 5V, detect low voltage
-    if (i2cReg[I2C_POWER_MODE] == 1 && powerIsOn && listenToTxd && i2cReg[I2C_LV_SHUTDOWN] == 0 && i2cReg[I2C_CONF_LOW_VOLTAGE] != 255) {
+    if (powerIsOn && listenToTxd && i2cReg[I2C_LV_SHUTDOWN] == 0 && i2cReg[I2C_CONF_LOW_VOLTAGE] != 255) {
       float vin = getInputVoltage();
       float vlow = ((float)i2cReg[I2C_CONF_LOW_VOLTAGE]) / 10;
       if (vin < vlow) {  // input voltage is below the low voltage threshold
@@ -256,7 +256,7 @@ void sleep() {
 
       // check input voltage if shutdown because of low voltage, and recovery voltage has been set
       // will skip checking I2C_LV_SHUTDOWN if I2C_CONF_LOW_VOLTAGE is set to 0xFF
-      if (i2cReg[I2C_POWER_MODE] == 1 && (i2cReg[I2C_LV_SHUTDOWN] == 1 || i2cReg[I2C_CONF_LOW_VOLTAGE] == 255) && i2cReg[I2C_CONF_RECOVERY_VOLTAGE] != 255) {     
+      if ((i2cReg[I2C_LV_SHUTDOWN] == 1 || i2cReg[I2C_CONF_LOW_VOLTAGE] == 255) && i2cReg[I2C_CONF_RECOVERY_VOLTAGE] != 255) {     
         ADCSRA |= _BV(ADEN);
         float vin = getInputVoltage();
         ADCSRA &= ~_BV(ADEN);
@@ -290,6 +290,10 @@ void sleep() {
 void cutPower() {
   powerIsOn = false;
   digitalWrite(PIN_CTRL, 0);
+
+  // reset of switch pin moved from PCINT1_vect
+  digitalWrite(PIN_BUTTON, 1);
+  pinMode(PIN_BUTTON, INPUT_PULLUP);
 }
 
 
@@ -459,9 +463,13 @@ ISR (PCINT1_vect) {
   } else {
     if (digitalRead(PIN_BUTTON) == 0) {   // button is pressed, PCINT9
       
+      // when button triggered by low voltage, transitioning from low to high
+      // happens too quickly for the pi software to detect it
+      // moved to cutPower()
+
       // restore from RTC alarm processing
-      digitalWrite(PIN_BUTTON, 1);
-      pinMode(PIN_BUTTON, INPUT_PULLUP);
+      //digitalWrite(PIN_BUTTON, 1);
+      //pinMode(PIN_BUTTON, INPUT_PULLUP);
       
       // turn on the white LED
       ledOn(1);
